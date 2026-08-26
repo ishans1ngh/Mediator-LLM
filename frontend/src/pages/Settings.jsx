@@ -6,7 +6,7 @@ const Settings = () => {
     <div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Settings Navigation */}
-        <div className="bg-card border border-border rounded-lg p-4">
+        <div className="card p-4">
           <nav className="space-y-1">
             <button className="w-full flex items-center gap-3 px-4 py-3 bg-primary text-white rounded-lg">
               <User className="w-5 h-5" />
@@ -34,7 +34,7 @@ const Settings = () => {
         {/* Settings Content */}
         <div className="lg:col-span-2 space-y-6">
           {/* Profile Section */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="card p-6">
             <h3 className="text-lg font-semibold text-primaryText mb-4">Profile</h3>
             <div className="space-y-4">
               <div>
@@ -65,7 +65,7 @@ const Settings = () => {
           </div>
 
           {/* AI Configuration */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="card p-6">
             <h3 className="text-lg font-semibold text-primaryText mb-4">AI Configuration</h3>
             <p className="text-sm text-mutedText mb-4">Read-only prototype configuration</p>
             
@@ -90,7 +90,7 @@ const Settings = () => {
           </div>
 
           {/* Appearance */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="card p-6">
             <h3 className="text-lg font-semibold text-primaryText mb-4">Appearance</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">

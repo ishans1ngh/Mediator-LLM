@@ -23,13 +23,13 @@ const Patients = () => {
 
       {/* Filters */}
       <div className="flex gap-4 mb-6">
-        <select className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary">
+        <select className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary">
           <option>All Diagnoses</option>
           <option>Glioblastoma</option>
           <option>Alzheimer's</option>
           <option>Parkinson's</option>
         </select>
-        <select className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary">
+        <select className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary">
           <option>All Statuses</option>
           <option>Completed</option>
           <option>Processing</option>
@@ -39,7 +39,7 @@ const Patients = () => {
       </div>
 
       {/* Patient Table */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="card overflow-hidden">
         <table className="w-full">
           <thead className="bg-secondary">
             <tr>

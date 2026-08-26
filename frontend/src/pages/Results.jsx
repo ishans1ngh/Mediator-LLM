@@ -82,15 +82,15 @@ const Results = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Eligible</p>
           <p className="text-3xl font-bold text-success">{results.filter(r => r.eligibility === 'ELIGIBLE').length}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Uncertain</p>
           <p className="text-3xl font-bold text-warning">{results.filter(r => r.eligibility === 'UNCERTAIN').length}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Not Eligible</p>
           <p className="text-3xl font-bold text-danger">{results.filter(r => r.eligibility === 'NOT ELIGIBLE').length}</p>
         </div>
@@ -102,7 +102,7 @@ const Results = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary"
+            className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary"
           >
             <option value="All">All</option>
             <option value="Eligible">Eligible</option>
@@ -116,7 +116,7 @@ const Results = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary"
+            className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary"
           >
             <option value="Best Match">Best Match</option>
             <option value="Eligibility">Eligibility</option>
@@ -131,7 +131,7 @@ const Results = () => {
           if (!trial) return null;
 
           return (
-            <div key={result.trialId} className="bg-card border border-border rounded-lg overflow-hidden">
+            <div key={result.trialId} className="card overflow-hidden">
               {/* Trial Header */}
               <div className="p-6 border-b border-border">
                 <div className="flex justify-between items-start">

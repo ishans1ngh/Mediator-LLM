@@ -145,7 +145,7 @@ const NewPatient = () => {
       </div>
 
       {/* Form Content */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="card p-6">
         {step === 1 && (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-primaryText">Patient Information</h3>

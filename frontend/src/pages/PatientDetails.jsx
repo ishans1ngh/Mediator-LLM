@@ -27,7 +27,7 @@ const PatientDetails = () => {
       </Link>
 
       {/* Patient Header */}
-      <div className="bg-card border border-border rounded-lg p-6 mb-6">
+      <div className="card p-6 mb-6">
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-semibold text-primaryText mb-2">
@@ -69,7 +69,7 @@ const PatientDetails = () => {
       {/* Patient Information */}
       <div className="grid grid-cols-2 gap-6">
         {/* Clinical Information */}
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <div className="flex items-center gap-2 mb-4">
             <FileText className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-primaryText">Clinical Information</h3>
@@ -110,7 +110,7 @@ const PatientDetails = () => {
         {/* Lab Results & MRI */}
         <div className="space-y-6">
           {/* Lab Results */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="card p-6">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="w-5 h-5 text-cyan" />
               <h3 className="text-lg font-semibold text-primaryText">Lab Results</h3>
@@ -132,7 +132,7 @@ const PatientDetails = () => {
           </div>
 
           {/* MRI Status */}
-          <div className="bg-card border border-border rounded-lg p-6">
+          <div className="card p-6">
             <h3 className="text-lg font-semibold text-primaryText mb-4">MRI Scans</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between">

@@ -63,7 +63,7 @@ const Analysis = () => {
       </div>
 
       {/* Pipeline */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="card p-6">
         <h3 className="text-lg font-semibold text-primaryText mb-6">Analysis Pipeline</h3>
         
         <div className="space-y-4">

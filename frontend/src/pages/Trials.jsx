@@ -35,14 +35,14 @@ const Trials = () => {
             placeholder="Search by condition, NCT ID, or trial title..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-card border border-border rounded-lg text-sm text-primaryText placeholder-mutedText focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-2 card text-sm text-primaryText placeholder-mutedText focus:outline-none focus:border-primary"
           />
         </div>
         
         <select
           value={phaseFilter}
           onChange={(e) => setPhaseFilter(e.target.value)}
-          className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary"
+          className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary"
         >
           <option value="All">All Phases</option>
           <option value="Phase I">Phase I</option>
@@ -53,7 +53,7 @@ const Trials = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 bg-card border border-border rounded-lg text-primaryText focus:outline-none focus:border-primary"
+          className="px-4 py-2 card text-primaryText focus:outline-none focus:border-primary"
         >
           <option value="All">All Statuses</option>
           <option value="Recruiting">Recruiting</option>
@@ -68,7 +68,7 @@ const Trials = () => {
           <Link
             key={trial.id}
             to={`/trials/${trial.id}`}
-            className="bg-card border border-border rounded-lg p-6 hover:border-primary transition-colors cursor-pointer"
+            className="card p-6 hover:border-primary transition-colors cursor-pointer"
           >
             <div className="flex justify-between items-start mb-4">
               <div>

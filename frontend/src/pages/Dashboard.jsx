@@ -1,62 +1,104 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Users, ClipboardList, CheckCircle, AlertCircle, Activity } from 'lucide-react';
+import {
+  Plus,
+  Users,
+  ClipboardList,
+  CheckCircle,
+  AlertCircle,
+  Activity,
+  TrendingUp,
+  TrendingDown,
+} from 'lucide-react';
 import { mockPatients } from '../data/mockData';
 
+const stats = [
+  { title: 'Total Patients', value: 128, icon: Users, trend: '+12% this month', up: true, iconColor: 'text-primary', iconBg: 'bg-primary/10' },
+  { title: 'Clinical Trials', value: 64, icon: ClipboardList, trend: '+8% this month', up: true, iconColor: 'text-cyan', iconBg: 'bg-cyan/10' },
+  { title: 'AI Analyses', value: 83, icon: Activity, trend: '+6% this month', up: true, iconColor: 'text-info', iconBg: 'bg-info/10' },
+  { title: 'Eligible Matches', value: 37, icon: CheckCircle, trend: '+15% this month', up: true, iconColor: 'text-success', iconBg: 'bg-success/10' },
+  { title: 'Pending Reviews', value: 8, icon: AlertCircle, trend: '-2% this month', up: false, iconColor: 'text-warning', iconBg: 'bg-warning/10' },
+];
+
+const statusStyles = {
+  Completed: 'bg-success/10 text-success',
+  Processing: 'bg-primary/10 text-primary',
+  'Pending Review': 'bg-warning/10 text-warning',
+  Failed: 'bg-danger/10 text-danger',
+};
+
+const statusDotStyles = {
+  Completed: 'bg-success',
+  Processing: 'bg-primary',
+  'Pending Review': 'bg-warning',
+  Failed: 'bg-danger',
+};
+
+const matchingOverview = [
+  { label: 'Eligible', value: 37, barColor: 'bg-success', textColor: 'text-success' },
+  { label: 'Uncertain', value: 18, barColor: 'bg-warning', textColor: 'text-warning' },
+  { label: 'Not Eligible', value: 42, barColor: 'bg-danger', textColor: 'text-danger' },
+];
+
+const matchingTotal = matchingOverview.reduce((sum, item) => sum + item.value, 0);
+
+const StatusBadge = ({ status }) => (
+  <span
+    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
+      statusStyles[status] ?? 'bg-danger/10 text-danger'
+    }`}
+  >
+    <span className={`h-1.5 w-1.5 rounded-full ${statusDotStyles[status] ?? 'bg-danger'}`} />
+    {status}
+  </span>
+);
+
 const Dashboard = () => {
-  const stats = [
-    { title: 'Total Patients', value: 128, icon: Users, trend: '+12% this month', bgClass: 'bg-primary/20', textClass: 'text-primary' },
-    { title: 'Clinical Trials', value: 64, icon: ClipboardList, trend: '+8% this month', bgClass: 'bg-cyan/20', textClass: 'text-cyan' },
-    { title: 'AI Analyses', value: 83, icon: Activity, trend: '+6% this month', bgClass: 'bg-info/20', textClass: 'text-info' },
-    { title: 'Eligible Matches', value: 37, icon: CheckCircle, trend: '+15% this month', bgClass: 'bg-success/20', textClass: 'text-success' },
-    { title: 'Pending Reviews', value: 8, icon: AlertCircle, trend: '-2% this month', bgClass: 'bg-warning/20', textClass: 'text-warning' },
-  ];
-
-  const matchingOverview = {
-    eligible: 37,
-    uncertain: 18,
-    notEligible: 42
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 className="text-2xl font-semibold text-primaryText">Clinical Trial Matching</h2>
-          <p className="text-mutedText mt-1">AI-powered patient eligibility analysis</p>
+          <h2 className="text-[28px] font-semibold leading-8 text-primaryText">Dashboard</h2>
+          <p className="mt-1.5 text-sm text-secondaryText">
+            AI-powered clinical trial matching and eligibility analysis
+          </p>
         </div>
         <Link
           to="/patients/new"
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-600 text-white rounded-lg transition-colors flex-shrink-0"
+          className="flex h-10 flex-shrink-0 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary/90"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="h-4 w-4" />
           New Patient
         </Link>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map((stat) => (
-          <div key={stat.title} className="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors">
-            <div className="flex items-start justify-between mb-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${stat.bgClass} flex-shrink-0`}>
-                <stat.icon className={`w-5 h-5 ${stat.textClass}`} />
+          <div key={stat.title} className="card p-5 transition-colors duration-150 hover:bg-card-hover">
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-secondaryText">{stat.title}</p>
+              <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg ${stat.iconBg}`}>
+                <stat.icon className={`h-4 w-4 ${stat.iconColor}`} strokeWidth={1.75} />
               </div>
             </div>
-            <p className="text-sm text-mutedText mb-1">{stat.title}</p>
-            <p className="text-2xl font-bold text-primaryText mb-2">{stat.value}</p>
-            <p className={`text-xs ${stat.trend.startsWith('+') ? 'text-success' : 'text-danger'}`}>{stat.trend}</p>
+            <p className="text-[28px] font-semibold leading-8 text-primaryText">{stat.value}</p>
+            <p className={`mt-2 flex items-center gap-1 text-xs ${stat.up ? 'text-success' : 'text-danger'}`}>
+              {stat.up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+              {stat.trend}
+            </p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Recent Patients + Matching Overview */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(300px,1fr)]">
         {/* Recent Patients */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-lg overflow-hidden">
-          <div className="p-5 border-b border-border flex justify-between items-center">
+        <div className="card overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border p-5">
             <h3 className="text-lg font-semibold text-primaryText">Recent Patients</h3>
-            <Link to="/patients" className="text-sm text-primary hover:text-primary/80 transition-colors">
+            <Link to="/patients" className="text-sm text-primary transition-colors hover:text-primary/80">
               View all →
             </Link>
           </div>
@@ -64,45 +106,32 @@ const Dashboard = () => {
             <table className="w-full">
               <thead className="bg-secondary">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Patient ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Diagnosis</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Age</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Last Analysis</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Matches</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-mutedText uppercase tracking-wider">Status</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Patient ID</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Diagnosis</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Age</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Last Analysis</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Matches</th>
+                  <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-mutedText">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {mockPatients.slice(0, 5).map((patient) => (
-                  <tr key={patient.id} className="hover:bg-card-hover transition-colors">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-primary">
-                      <Link to={`/patients/${patient.id}`} className="hover:text-primary/80 transition-colors">
+                  <tr key={patient.id} className="transition-colors hover:bg-card-hover">
+                    <td className="whitespace-nowrap px-5 py-3.5 text-sm font-medium text-primary">
+                      <Link to={`/patients/${patient.id}`} className="transition-colors hover:text-primary/80">
                         {patient.id}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-secondaryText">{patient.diagnosis}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-secondaryText">{patient.age}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-secondaryText">
+                    <td className="whitespace-nowrap px-5 py-3.5 text-sm text-secondaryText">{patient.diagnosis}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-sm text-secondaryText">{patient.age}</td>
+                    <td className="whitespace-nowrap px-5 py-3.5 text-sm text-secondaryText">
                       {patient.lastAnalysis ? new Date(patient.lastAnalysis).toLocaleDateString() : 'Not analyzed'}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-secondaryText">
+                    <td className="whitespace-nowrap px-5 py-3.5 text-sm text-secondaryText">
                       {patient.status === 'Completed' ? '2 matches' : '-'}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full ${
-                        patient.status === 'Completed' ? 'bg-success/20 text-success' :
-                        patient.status === 'Processing' ? 'bg-primary/20 text-primary' :
-                        patient.status === 'Pending Review' ? 'bg-warning/20 text-warning' :
-                        'bg-danger/20 text-danger'
-                      }`}>
-                        <span className="w-1.5 h-1.5 rounded-full mr-1.5 ${
-                          patient.status === 'Completed' ? 'bg-success' :
-                          patient.status === 'Processing' ? 'bg-primary' :
-                          patient.status === 'Pending Review' ? 'bg-warning' :
-                          'bg-danger'
-                        }"></span>
-                        {patient.status}
-                      </span>
+                    <td className="whitespace-nowrap px-5 py-3.5">
+                      <StatusBadge status={patient.status} />
                     </td>
                   </tr>
                 ))}
@@ -112,49 +141,40 @@ const Dashboard = () => {
         </div>
 
         {/* Matching Overview */}
-        <div className="bg-card border border-border rounded-lg p-5">
-          <h3 className="text-lg font-semibold text-primaryText mb-4">Matching Overview</h3>
-          
-          <div className="space-y-4">
-            <div className="bg-secondary p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-secondaryText">Eligible</span>
-                <span className="text-lg font-bold text-success">{matchingOverview.eligible}</span>
-              </div>
-              <div className="w-full bg-border rounded-full h-2">
-                <div className="bg-success h-2 rounded-full transition-all duration-500" style={{ width: '38%' }}></div>
-              </div>
-            </div>
+        <div className="card p-5">
+          <h3 className="text-lg font-semibold text-primaryText">Matching Overview</h3>
+          <p className="mt-1 text-xs text-mutedText">{matchingTotal} analyses evaluated</p>
 
-            <div className="bg-secondary p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-secondaryText">Uncertain</span>
-                <span className="text-lg font-bold text-warning">{matchingOverview.uncertain}</span>
+          <div className="mt-6 space-y-5">
+            {matchingOverview.map((item) => (
+              <div key={item.label}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm text-secondaryText">{item.label}</span>
+                  <span className={`text-sm font-semibold ${item.textColor}`}>{item.value}</span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-border">
+                  <div
+                    className={`h-2 rounded-full transition-all duration-500 ${item.barColor}`}
+                    style={{ width: `${Math.round((item.value / matchingTotal) * 100)}%` }}
+                  />
+                </div>
               </div>
-              <div className="w-full bg-border rounded-full h-2">
-                <div className="bg-warning h-2 rounded-full transition-all duration-500" style={{ width: '19%' }}></div>
-              </div>
-            </div>
-
-            <div className="bg-secondary p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-secondaryText">Not Eligible</span>
-                <span className="text-lg font-bold text-danger">{matchingOverview.notEligible}</span>
-              </div>
-              <div className="w-full bg-border rounded-full h-2">
-                <div className="bg-danger h-2 rounded-full transition-all duration-500" style={{ width: '43%' }}></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 p-4 bg-success/10 border border-success/20 rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
-              <p className="text-sm font-medium text-primaryText">System Status</p>
-            </div>
-            <p className="text-xs text-secondaryText">All systems operational. AI agents running normally.</p>
+            ))}
           </div>
         </div>
+      </div>
+
+      {/* System Status */}
+      <div className="card p-5">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-primaryText">System Status</h3>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-success" />
+            Online
+          </span>
+        </div>
+        <p className="mt-3 text-sm text-primaryText">All systems operational</p>
+        <p className="mt-1 text-sm text-mutedText">AI agents running normally.</p>
       </div>
     </div>
   );

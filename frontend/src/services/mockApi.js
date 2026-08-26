@@ -14,7 +14,7 @@ export const getPatients = async () => {
 
 export const getPatient = async (id) => {
   await delay(200);
-  return mockPatients.find(p => p.id === parseInt(id));
+  return mockPatients.find(p => p.id === id);
 };
 
 export const createPatient = async (patientData) => {
@@ -42,7 +42,7 @@ export const getTrials = async () => {
 
 export const getTrial = async (id) => {
   await delay(200);
-  return mockTrials.find(t => t.id === parseInt(id));
+  return mockTrials.find(t => t.id === id);
 };
 
 // Matching endpoints

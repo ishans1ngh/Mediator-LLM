@@ -20,19 +20,19 @@ const Reports = () => {
     <div>
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Total Analyses</p>
           <p className="text-3xl font-bold text-primaryText">{reports.totalAnalyses}</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Average Match Score</p>
           <p className="text-3xl font-bold text-primaryText">{reports.averageMatchScore}%</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Eligible Rate</p>
           <p className="text-3xl font-bold text-success">{reports.eligibleRate}%</p>
         </div>
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <p className="text-sm text-mutedText mb-2">Unknown Rate</p>
           <p className="text-3xl font-bold text-warning">{reports.unknownRate}%</p>
         </div>
@@ -41,7 +41,7 @@ const Reports = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Eligibility Distribution */}
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <h3 className="text-lg font-semibold text-primaryText mb-4">Eligibility Distribution</h3>
           <div className="space-y-4">
             <div>
@@ -84,7 +84,7 @@ const Reports = () => {
         </div>
 
         {/* Matching Performance */}
-        <div className="bg-card border border-border rounded-lg p-6">
+        <div className="card p-6">
           <h3 className="text-lg font-semibold text-primaryText mb-4">Matching Performance</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-secondary p-4 rounded-lg">
@@ -108,7 +108,7 @@ const Reports = () => {
       </div>
 
       {/* Segmentation Metrics */}
-      <div className="bg-card border border-border rounded-lg p-6">
+      <div className="card p-6">
         <h3 className="text-lg font-semibold text-primaryText mb-4">Segmentation Metrics</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-secondary p-4 rounded-lg">
