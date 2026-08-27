@@ -47,9 +47,16 @@ class PatientProfileAttribute(Base):
         Uuid(as_uuid=True), ForeignKey("patients.id", ondelete="CASCADE"), nullable=False, index=True
     )
     attribute_name: Mapped[str] = mapped_column(String(128), nullable=False)
-    attribute_value: Mapped[str] = mapped_column(Text, nullable=False)
+    attribute_value: Mapped[str] = mapped_column(Text, nullable=True)
+    normalized_value: Mapped[str | None] = mapped_column(Text, nullable=True)
+    unit: Mapped[str | None] = mapped_column(String(64), nullable=True)
     source: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    source_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="UNKNOWN")
     confidence: Mapped[float | None] = mapped_column(Numeric(5, 4), nullable=True)
+    agent_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    model_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     patient: Mapped[Patient] = relationship(back_populates="profile_attributes")

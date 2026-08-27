@@ -143,3 +143,32 @@ class PaginatedPatients(BaseModel):
     page: int
     page_size: int
     total: int
+
+
+class PatientAttributeOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    attribute_name: str
+    attribute_value: str | None
+    normalized_value: str | None
+    unit: str | None
+    source: str | None
+    source_text: str | None
+    status: str
+    confidence: float | None
+    agent_version: str | None
+    prompt_version: str | None
+    model_name: str | None
+
+
+class PatientProfileOut(BaseModel):
+    patient_id: str
+    attributes: list[PatientAttributeOut]
+    overall_status: str
+
+
+class PatientExtractResponse(BaseModel):
+    patient_id: str
+    status: str
+    attributes: list[PatientAttributeOut]

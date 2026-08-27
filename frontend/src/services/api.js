@@ -53,6 +53,20 @@ export const api = {
     return response.json();
   },
 
+  extractPatientProfile: async (patientId) => {
+    const response = await fetch(`${API_BASE_URL}/patients/${patientId}/extract`, {
+      method: 'POST',
+    });
+    if (!response.ok) throw new Error('Failed to extract patient profile');
+    return response.json();
+  },
+
+  getPatientProfile: async (patientId) => {
+    const response = await fetch(`${API_BASE_URL}/patients/${patientId}/profile`);
+    if (!response.ok) throw new Error('Failed to fetch patient profile');
+    return response.json();
+  },
+
   // Lab endpoints
   addLab: async (patientId, labData) => {
     const response = await fetch(`${API_BASE_URL}/patients/${patientId}/labs`, {
@@ -166,6 +180,14 @@ export const api = {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to parse trial criteria');
+    return response.json();
+  },
+
+  parseTrialWithAI: async (trialId) => {
+    const response = await fetch(`${API_BASE_URL}/trials/${trialId}/parse`, {
+      method: 'POST',
+    });
+    if (!response.ok) throw new Error('Failed to parse trial with AI');
     return response.json();
   },
 

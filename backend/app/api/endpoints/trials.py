@@ -11,6 +11,7 @@ from app.repositories.trial_repository import TrialRepository
 from app.schemas.criteria import CriteriaParseResponse, CriteriaResponse, TrialCriterionOut
 from app.schemas.trial import TrialDetail, TrialListItem, TrialSyncResponse
 from app.services.criteria_service import CriteriaService
+from app.services.trial_parser_service import TrialParserService
 from app.services.trial_service import TrialService
 from sqlalchemy.orm import Session
 
@@ -106,7 +107,7 @@ async def get_trial_criteria(trial_id: uuid.UUID, db: Session = Depends(get_db))
         raise handle_app_error(exc)
 
 
-@router.post("/{trial_id}/criteria/parse", response_model=CriteriaParseResponse, summary="Parse trial eligibility criteria")
+@router.post("/{trial_id}/criteria/parse", response_model=CriteriaParseResponse, summary="Parse trial eligibility criteria (deterministic)")
 async def parse_trial_criteria(trial_id: uuid.UUID, db: Session = Depends(get_db)) -> CriteriaParseResponse:
     service = TrialService(db)
     try:
@@ -127,6 +128,27 @@ async def parse_trial_criteria(trial_id: uuid.UUID, db: Session = Depends(get_db
             structured=structured,
             unstructured=unstructured,
             criteria=[TrialCriterionOut.model_validate(c) for c in criteria],
+        )
+    except AppError as exc:
+        raise handle_app_error(exc)
+
+
+@router.post("/{trial_id}/parse", response_model=CriteriaParseResponse, summary="Parse trial eligibility criteria using AI")
+async def parse_trial_with_ai(trial_id: uuid.UUID, db: Session = Depends(get_db)) -> CriteriaParseResponse:
+    service = TrialParserService(db)
+    try:
+        eligibility = await service.parse_trial_eligibility(trial_id)
+        
+        structured = sum(1 for c in eligibility.criteria if c.parser_status.value == "STRUCTURED")
+        partially_structured = sum(1 for c in eligibility.criteria if c.parser_status.value == "PARTIALLY_STRUCTURED")
+        unstructured = sum(1 for c in eligibility.criteria if c.parser_status.value == "UNSTRUCTURED")
+        
+        return CriteriaParseResponse(
+            trial_id=str(trial_id),
+            total_criteria=len(eligibility.criteria),
+            structured=structured,
+            unstructured=unstructured,
+            criteria=[TrialCriterionOut.model_validate(c) for c in service.get_trial_criteria(trial_id)],
         )
     except AppError as exc:
         raise handle_app_error(exc)

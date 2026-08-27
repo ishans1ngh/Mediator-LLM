@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     analysis_step_delay_seconds: float = 0.35
     http_timeout_seconds: float = 15.0
 
+    # LLM Configuration
+    llm_provider: str = "mock"
+    llm_model: str = "mock-model"
+    llm_api_key: str | None = None
+    llm_temperature: float = 0.0
+    llm_max_tokens: int = 4000
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def coerce_cors(cls, value: str | list[str]) -> str:

@@ -11,15 +11,19 @@ from app.repositories.patient_repository import PatientRepository
 from app.schemas.patient import (
     LabCreate,
     LabOut,
+    PatientAttributeOut,
     PatientCreate,
     PatientCreated,
     PatientDetail,
+    PatientExtractResponse,
     PatientListItem,
+    PatientProfileOut,
     PatientUpdate,
     PaginatedPatients,
     TreatmentCreate,
     TreatmentOut,
 )
+from app.services.patient_reader_service import PatientReaderService
 from app.services.patient_service import PatientService
 from sqlalchemy.orm import Session
 
@@ -170,5 +174,53 @@ async def delete_treatment(
     try:
         service.delete_treatment(patient_id, treatment_id)
         return {"message": "Treatment deleted successfully"}
+    except AppError as exc:
+        raise handle_app_error(exc)
+
+
+@router.post("/{patient_id}/extract", response_model=PatientExtractResponse, summary="Extract patient profile using AI")
+async def extract_patient_profile(patient_id: uuid.UUID, db: Session = Depends(get_db)) -> PatientExtractResponse:
+    service = PatientReaderService(db)
+    try:
+        profile = await service.extract_patient_profile(patient_id)
+        
+        return PatientExtractResponse(
+            patient_id=str(patient_id),
+            status=profile.overall_status,
+            attributes=[
+                PatientAttributeOut(
+                    id=attr.id,
+                    attribute_name=attr.attribute_name,
+                    attribute_value=attr.attribute_value,
+                    normalized_value=attr.normalized_value,
+                    unit=attr.unit,
+                    source=attr.source,
+                    source_text=attr.source_text,
+                    status=attr.status,
+                    confidence=float(attr.confidence) if attr.confidence else None,
+                    agent_version=attr.agent_version,
+                    prompt_version=attr.prompt_version,
+                    model_name=attr.model_name,
+                )
+                for attr in service.get_patient_profile(patient_id)
+            ],
+        )
+    except AppError as exc:
+        raise handle_app_error(exc)
+
+
+@router.get("/{patient_id}/profile", response_model=PatientProfileOut, summary="Get patient profile attributes")
+async def get_patient_profile(patient_id: uuid.UUID, db: Session = Depends(get_db)) -> PatientProfileOut:
+    service = PatientReaderService(db)
+    try:
+        attributes = service.get_patient_profile(patient_id)
+        
+        return PatientProfileOut(
+            patient_id=str(patient_id),
+            attributes=[
+                PatientAttributeOut.model_validate(attr) for attr in attributes
+            ],
+            overall_status="COMPLETED" if attributes else "NOT_EXTRACTED",
+        )
     except AppError as exc:
         raise handle_app_error(exc)

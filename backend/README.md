@@ -410,15 +410,145 @@ curl -X POST "http://localhost:8000/api/v1/trials/sync?condition=Glioblastoma&ma
 curl -X POST http://localhost:8000/api/v1/trials/{trial_id}/criteria/parse
 ```
 
+## AI Agent Layer
+
+The backend includes an AI agent layer for structured data extraction with provider abstraction.
+
+### Architecture
+
+```
+LLMClient (Abstract Interface)
+    ↓
+├── MockLLMClient (Development/Testing)
+└── [Real Provider Adapters] (Future)
+    ↓
+Patient Reader Agent
+    ↓
+Structured Patient Attributes
+
+Trial Parser Agent
+    ↓
+Structured Trial Criteria
+```
+
+### Provider Abstraction
+
+The system uses an abstract `LLMClient` interface to avoid tight coupling to any specific LLM provider:
+
+```python
+class LLMClient(ABC):
+    async def generate_structured(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        response_schema: type
+    ) -> Any:
+        ...
+```
+
+### Mock LLM Client
+
+For development and testing, a `MockLLMClient` provides deterministic responses without requiring API keys:
+
+```python
+client = MockLLMClient(model="mock-model", temperature=0)
+```
+
+This enables:
+- Offline development
+- CI/CD without external dependencies
+- Deterministic test outputs
+
+### Patient Reader Agent
+
+Extracts clinically relevant patient attributes:
+
+**Extracted Fields:**
+- age, sex, diagnosis, disease_stage
+- performance_status (ECOG, Karnofsky)
+- previous_treatments, current_treatments
+- relevant_lab_values
+- biomarkers (MGMT, IDH, EGFR)
+
+**Key Principles:**
+- NEVER invent missing information
+- Mark absent data as UNKNOWN
+- Preserve source text for evidence
+- Normalize common values (MALE/FEMALE)
+- Confidence scores reflect extraction certainty
+
+**API Endpoints:**
+- `POST /api/v1/patients/{patient_id}/extract` - Extract patient profile using AI
+- `GET /api/v1/patients/{patient_id}/profile` - Get extracted patient profile
+
+### Trial Parser Agent
+
+Transforms eligibility criteria into structured format:
+
+**Supported Operators:**
+- `=, ==, !=, >, >=, <, <=`
+- `IN, NOT_IN, CONTAINS, NOT_CONTAINS, BETWEEN`
+
+**Parser Status:**
+- `STRUCTURED` - Fully structured with field/operator/value
+- `PARTIALLY_STRUCTURED` - Some structure with ambiguity
+- `UNSTRUCTURED` - Cannot be safely structured
+
+**Key Principles:**
+- Preserve original criterion text
+- Do not invent requirements
+- Preserve clinical qualifiers (histologically confirmed, recurrent, etc.)
+- Mark complex criteria as UNSTRUCTURED
+
+**API Endpoints:**
+- `POST /api/v1/trials/{trial_id}/parse` - Parse eligibility using AI
+- `POST /api/v1/trials/{trial_id}/criteria/parse` - Parse using deterministic parser
+
+### Environment Variables
+
+```env
+# LLM Configuration
+LLM_PROVIDER=mock
+LLM_MODEL=mock-model
+LLM_API_KEY=
+LLM_TEMPERATURE=0
+LLM_MAX_TOKENS=4000
+```
+
+### AI Metadata Storage
+
+Database models include audit information:
+- `agent_version` - Agent version (e.g., patient-reader-v1)
+- `prompt_version` - Prompt version (e.g., v1)
+- `model_name` - Model identifier used
+- `confidence` - Extraction confidence score
+- `source_text` - Evidence excerpt
+
+### Testing
+
+Unit tests use `MockLLMClient` for deterministic testing:
+
+```bash
+pytest tests/test_patient_reader.py
+pytest tests/test_trial_parser.py
+```
+
+Tests verify:
+- No hallucination of missing information
+- Proper UNKNOWN marking for absent data
+- Evidence preservation
+- Confidence scoring
+- Deterministic outputs
+
 ## Agents
 
 ### Patient Reader Agent
 
-Extracts structured attributes from patient data. Currently a deterministic mock implementation.
+Extracts structured attributes from patient data. Currently uses MockLLMClient with replaceable interface for future LLM implementation.
 
 ### Trial Parser Agent
 
-Parses eligibility criteria into structured format. Currently uses deterministic parser with replaceable interface for future LLM implementation.
+Parses eligibility criteria into structured format. Currently uses MockLLMClient with replaceable interface for future LLM implementation.
 
 ### Mediator Agent
 
