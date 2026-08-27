@@ -6,6 +6,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.analysis import Analysis, AnalysisStep
+from app.models.matching import MatchingResult
 
 
 class AnalysisRepository:
@@ -30,11 +31,8 @@ class AnalysisRepository:
         )
         return self.db.execute(stmt).scalar_one_or_none()
 
-    def next_sequence(self, year: int) -> int:
-        prefix = f"ANL-{year}-"
-        count = self.db.execute(
-            select(func.count()).where(Analysis.analysis_code.like(f"{prefix}%"))
-        ).scalar_one()
+    def next_sequence(self) -> int:
+        count = self.db.execute(select(func.count()).select_from(Analysis)).scalar_one()
         return int(count) + 1
 
     def add(self, analysis: Analysis) -> Analysis:
@@ -51,5 +49,21 @@ class AnalysisRepository:
         stmt = select(AnalysisStep).where(
             AnalysisStep.analysis_id == analysis_id,
             AnalysisStep.step_name == step_name,
+        )
+        return self.db.execute(stmt).scalar_one_or_none()
+
+    def get_matching_results(self, analysis_id: uuid.UUID) -> list[MatchingResult]:
+        stmt = (
+            select(MatchingResult)
+            .options(selectinload(MatchingResult.trial), selectinload(MatchingResult.evaluations))
+            .where(MatchingResult.analysis_id == analysis_id)
+        )
+        return list(self.db.execute(stmt).scalars().all())
+
+    def get_matching_result_by_id(self, result_id: uuid.UUID) -> MatchingResult | None:
+        stmt = (
+            select(MatchingResult)
+            .options(selectinload(MatchingResult.trial), selectinload(MatchingResult.evaluations))
+            .where(MatchingResult.id == result_id)
         )
         return self.db.execute(stmt).scalar_one_or_none()

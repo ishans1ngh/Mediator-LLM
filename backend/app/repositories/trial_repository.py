@@ -16,7 +16,7 @@ class TrialRepository:
     def get_by_id(self, trial_id: uuid.UUID) -> Trial | None:
         return self.db.get(Trial, trial_id)
 
-    def get_by_nct(self, nct_id: str) -> Trial | None:
+    def get_by_nct_id(self, nct_id: str) -> Trial | None:
         stmt = select(Trial).where(func.upper(Trial.nct_id) == nct_id.upper())
         return self.db.execute(stmt).scalar_one_or_none()
 
