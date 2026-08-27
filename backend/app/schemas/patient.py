@@ -14,7 +14,7 @@ class PatientCreate(BaseModel):
     clinical_notes: str | None = None
     medical_history: str | None = None
     performance_status: str | None = None
-    status: str | None = "created"
+    status: str | None = "ACTIVE"
 
 
 class PatientUpdate(BaseModel):

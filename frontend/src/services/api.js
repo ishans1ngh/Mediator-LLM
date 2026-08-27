@@ -129,6 +129,12 @@ export const api = {
     return response.json();
   },
 
+  searchTrials: async (condition, maxResults = 20) => {
+    const response = await fetch(`${API_BASE_URL}/trials/search?condition=${encodeURIComponent(condition)}&max_results=${maxResults}`);
+    if (!response.ok) throw new Error('Failed to search trials');
+    return response.json();
+  },
+
   getTrial: async (trialId) => {
     const response = await fetch(`${API_BASE_URL}/trials/${trialId}`);
     if (!response.ok) throw new Error('Failed to fetch trial');
@@ -146,6 +152,20 @@ export const api = {
       method: 'POST',
     });
     if (!response.ok) throw new Error('Failed to sync trials');
+    return response.json();
+  },
+
+  getTrialCriteria: async (trialId) => {
+    const response = await fetch(`${API_BASE_URL}/trials/${trialId}/criteria`);
+    if (!response.ok) throw new Error('Failed to fetch trial criteria');
+    return response.json();
+  },
+
+  parseTrialCriteria: async (trialId) => {
+    const response = await fetch(`${API_BASE_URL}/trials/${trialId}/criteria/parse`, {
+      method: 'POST',
+    });
+    if (!response.ok) throw new Error('Failed to parse trial criteria');
     return response.json();
   },
 

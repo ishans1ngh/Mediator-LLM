@@ -98,12 +98,12 @@ async def update_patient(
         raise handle_app_error(exc)
 
 
-@router.delete("/{patient_id}", summary="Delete patient")
-async def delete_patient(patient_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
+@router.delete("/{patient_id}", summary="Archive patient")
+async def archive_patient(patient_id: uuid.UUID, db: Session = Depends(get_db)) -> dict:
     service = PatientService(db)
     try:
-        service.delete_patient(patient_id)
-        return {"message": "Patient deleted successfully"}
+        service.archive_patient(patient_id)
+        return {"message": "Patient archived successfully"}
     except AppError as exc:
         raise handle_app_error(exc)
 

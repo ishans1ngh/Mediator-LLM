@@ -20,6 +20,9 @@ class TrialCriterion(Base):
     operator: Mapped[str | None] = mapped_column(String(16), nullable=True)
     value: Mapped[str | None] = mapped_column(String(255), nullable=True)
     unit: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    parser_status: Mapped[str] = mapped_column(String(32), nullable=False, default="UNSTRUCTURED")
+    parser_version: Mapped[str] = mapped_column(String(64), nullable=False, default="v1-deterministic")
+    confidence: Mapped[float | None] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     trial: Mapped["Trial"] = relationship(back_populates="criteria")

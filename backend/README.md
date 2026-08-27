@@ -209,9 +209,12 @@ docker run -p 8000:8000 --env-file .env mediator-llm-backend
 ### Trials
 
 - `GET /api/v1/trials` - List trials (with filters)
+- `GET /api/v1/trials/search` - Search ClinicalTrials.gov and sync
 - `GET /api/v1/trials/{trial_id}` - Get trial details
 - `GET /api/v1/trials/nct/{nct_id}` - Get trial by NCT ID
 - `POST /api/v1/trials/sync` - Sync trials from ClinicalTrials.gov
+- `GET /api/v1/trials/{trial_id}/criteria` - Get trial eligibility criteria
+- `POST /api/v1/trials/{trial_id}/criteria/parse` - Parse trial eligibility criteria
 
 ### Analysis
 
@@ -262,6 +265,24 @@ curl -X POST http://localhost:8000/api/v1/patients/{patient_id}/mri \
 
 ```bash
 curl -X POST "http://localhost:8000/api/v1/trials/sync?condition=Glioblastoma&max_results=20"
+```
+
+### Search Trials
+
+```bash
+curl "http://localhost:8000/api/v1/trials/search?condition=Glioblastoma&max_results=20"
+```
+
+### Get Trial Criteria
+
+```bash
+curl http://localhost:8000/api/v1/trials/{trial_id}/criteria
+```
+
+### Parse Trial Criteria
+
+```bash
+curl -X POST http://localhost:8000/api/v1/trials/{trial_id}/criteria/parse
 ```
 
 ### Create Analysis
@@ -329,6 +350,66 @@ The analysis pipeline runs asynchronously with the following steps:
 8. **MEDIATOR** - Evaluate patient against criteria (mock agent)
 9. **MATCHING_EVALUATION** - Generate final matching results
 
+## ClinicalTrials.gov Integration
+
+The backend integrates with ClinicalTrials.gov API v2 to retrieve and normalize clinical trial data.
+
+### Data Flow
+
+```
+ClinicalTrials.gov API
+        ↓
+ClinicalTrials Service
+        ↓
+Normalizer
+        ↓
+Trial Service
+        ↓
+PostgreSQL
+        ↓
+Eligibility Text
+        ↓
+Deterministic Parser
+        ↓
+Trial Criteria
+```
+
+### Features
+
+- **External API Integration**: Async HTTP client with timeout and error handling
+- **Normalization**: Converts external API responses to internal schema
+- **Upsert**: Prevents duplicate trials by NCT ID
+- **Eligibility Parsing**: Deterministic parser for common patterns (age, sex, diagnosis)
+- **Parser Interface**: Replaceable design for future LLM-based parser
+- **Structured Criteria**: Stores both structured and unstructured criteria
+
+### Deterministic Parser
+
+The current parser handles simple patterns:
+- Age: "Age >= 18", "at least 18 years", "18 years or older"
+- Sex: "Male", "Female"
+- Diagnosis: "confirmed glioblastoma", "histologically confirmed"
+
+Complex criteria remain unstructured for future LLM processing.
+
+### Parser Status
+
+- **STRUCTURED**: Successfully parsed into field/operator/value
+- **UNSTRUCTURED**: Could not be confidently parsed, preserved as text
+
+### Example Usage
+
+```bash
+# Search and sync trials
+curl "http://localhost:8000/api/v1/trials/search?condition=Glioblastoma&max_results=20"
+
+# Sync without returning results
+curl -X POST "http://localhost:8000/api/v1/trials/sync?condition=Glioblastoma&max_results=20"
+
+# Parse eligibility criteria
+curl -X POST http://localhost:8000/api/v1/trials/{trial_id}/criteria/parse
+```
+
 ## Agents
 
 ### Patient Reader Agent
@@ -337,7 +418,7 @@ Extracts structured attributes from patient data. Currently a deterministic mock
 
 ### Trial Parser Agent
 
-Parses eligibility criteria into structured format. Currently a deterministic mock implementation.
+Parses eligibility criteria into structured format. Currently uses deterministic parser with replaceable interface for future LLM implementation.
 
 ### Mediator Agent
 

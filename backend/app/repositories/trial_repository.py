@@ -41,17 +41,16 @@ class TrialRepository:
             clause = or_(
                 Trial.title.ilike(like),
                 Trial.nct_id.ilike(like),
-                Trial.condition.ilike(like),
                 Trial.brief_summary.ilike(like),
             )
             stmt = stmt.where(clause)
             count_stmt = count_stmt.where(clause)
         if condition:
-            stmt = stmt.where(Trial.condition.ilike(f"%{condition}%"))
-            count_stmt = count_stmt.where(Trial.condition.ilike(f"%{condition}%"))
+            stmt = stmt.where(Trial.conditions.contains([condition]))
+            count_stmt = count_stmt.where(Trial.conditions.contains([condition]))
         if phase:
-            stmt = stmt.where(Trial.phase.ilike(f"%{phase}%"))
-            count_stmt = count_stmt.where(Trial.phase.ilike(f"%{phase}%"))
+            stmt = stmt.where(Trial.phases.contains([phase]))
+            count_stmt = count_stmt.where(Trial.phases.contains([phase]))
         if status:
             stmt = stmt.where(Trial.status.ilike(status))
             count_stmt = count_stmt.where(Trial.status.ilike(status))
@@ -69,7 +68,7 @@ class TrialRepository:
         stmt = (
             select(Trial)
             .options(selectinload(Trial.criteria))
-            .where(Trial.condition.ilike(f"%{condition}%"))
+            .where(Trial.conditions.contains([condition]))
             .order_by(Trial.nct_id.asc())
             .limit(limit)
         )

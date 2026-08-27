@@ -34,9 +34,9 @@ class TrialListItem(BaseModel):
     nct_id: str
     title: str
     brief_summary: str | None = None
-    phase: str | None = None
+    phases: list | None = None
     status: str | None = None
-    condition: str | None = None
+    conditions: list | None = None
     intervention: str | None = None
     locations: list | None = None
     extra: dict | None = None

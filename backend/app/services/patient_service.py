@@ -34,7 +34,7 @@ class PatientService:
             clinical_notes=data.clinical_notes,
             medical_history=data.medical_history,
             performance_status=data.performance_status,
-            status=data.status or "created",
+            status=data.status or "ACTIVE",
         )
         return self.repo.add(patient)
 
@@ -81,9 +81,11 @@ class PatientService:
         self.db.flush()
         return patient
 
-    def delete_patient(self, patient_id: uuid.UUID) -> None:
+    def archive_patient(self, patient_id: uuid.UUID) -> Patient:
         patient = self.get_patient(patient_id)
-        self.repo.delete(patient)
+        patient.status = "ARCHIVED"
+        self.db.flush()
+        return patient
 
     def add_lab(self, patient_id: uuid.UUID, data: LabCreate) -> PatientLab:
         patient = self.get_patient(patient_id)
